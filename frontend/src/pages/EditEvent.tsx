@@ -15,6 +15,8 @@ interface EventData {
   importantInfo?: string;
   lineup?: string;
   seatingType?: string;
+  seatRows?: number;
+  seatColumns?: number;
   maxTicketsPerOrder?: number;
   image?: string;
   startDate: string;
@@ -55,6 +57,9 @@ export default function EditEvent() {
   const [lineupItems, setLineupItems] = useState<string[]>(['']);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [mapLocation, setMapLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [seatingType, setSeatingType] = useState<'general' | 'assigned'>('general');
+  const [seatRows, setSeatRows] = useState('');
+  const [seatColumns, setSeatColumns] = useState('');
 
   // State for API data
   const [categoriesData, setCategoriesData] = useState<{id: string, name: string}[]>([]);
@@ -121,6 +126,12 @@ export default function EditEvent() {
             maxTicketsPerOrder: String(event.maxTicketsPerOrder || 10),
             imageUrl: event.image || ''
           });
+
+          if (event.seatingType === 'assigned') {
+            setSeatingType('assigned');
+            setSeatRows(String(event.seatRows || ''));
+            setSeatColumns(String(event.seatColumns || ''));
+          }
 
           // Parse importantInfo
           if (event.importantInfo) {
@@ -362,6 +373,11 @@ export default function EditEvent() {
         form.append('maxTicketsPerOrder', String(parseInt(formData.maxTicketsPerOrder) || 10));
         form.append('venueId', venueId);
         form.append('categoryId', categoryId);
+        form.append('seatingType', seatingType);
+        if (seatingType === 'assigned') {
+          form.append('seatRows', seatRows);
+          form.append('seatColumns', seatColumns);
+        }
         form.append('importantInfo', filteredImportantInfo.length > 0 ? JSON.stringify(filteredImportantInfo) : '');
         form.append('lineup', filteredLineup.length > 0 ? JSON.stringify(filteredLineup) : '');
         requestOptions = { method: 'PUT', body: form };
@@ -379,6 +395,9 @@ export default function EditEvent() {
           categoryId,
           importantInfo: filteredImportantInfo.length > 0 ? JSON.stringify(filteredImportantInfo) : null,
           lineup: filteredLineup.length > 0 ? JSON.stringify(filteredLineup) : null,
+          seatingType,
+          seatRows: seatingType === 'assigned' ? parseInt(seatRows) : null,
+          seatColumns: seatingType === 'assigned' ? parseInt(seatColumns) : null,
           image: formData.imageUrl || null
         };
         requestOptions = { method: 'PUT', body: JSON.stringify(eventData) };
@@ -769,22 +788,67 @@ export default function EditEvent() {
               </div>
             </div>
 
-            {/* Capacity */}
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Total Event Capacity *</label>
-              <div className="relative">
-                <input
-                  type="number"
-                  name="capacity"
-                  value={formData.capacity}
-                  onChange={handleInputChange}
-                  placeholder="5000"
-                  className="w-full px-4 py-3 pl-11 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  required
-                />
-                <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            {/* Seating Configuration (for assigned seating events) */}
+            {seatingType === 'assigned' && (
+              <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-lg space-y-4">
+                <h3 className="text-sm font-semibold text-indigo-900 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Seat Map Configuration
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Number of Rows</label>
+                    <input
+                      type="number"
+                      value={seatRows}
+                      onChange={(e) => setSeatRows(e.target.value)}
+                      placeholder="e.g., 10"
+                      min="1"
+                      max="26"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Rows labeled A, B, C... (max 26)</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Seats per Row</label>
+                    <input
+                      type="number"
+                      value={seatColumns}
+                      onChange={(e) => setSeatColumns(e.target.value)}
+                      placeholder="e.g., 20"
+                      min="1"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Number of seats in each row</p>
+                  </div>
+                </div>
+                {seatRows && seatColumns && (
+                  <div className="flex items-center gap-2 text-sm text-indigo-700 bg-indigo-100 px-3 py-2 rounded-lg">
+                    <Info className="w-4 h-4" />
+                    <span>Total capacity: <strong>{parseInt(seatRows) * parseInt(seatColumns)}</strong> seats ({seatRows} rows × {seatColumns} seats)</span>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
+
+            {/* Capacity (general admission only) */}
+            {seatingType === 'general' && (
+              <div>
+                <label className="block text-sm text-gray-700 mb-2">Total Event Capacity *</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="capacity"
+                    value={formData.capacity}
+                    onChange={handleInputChange}
+                    placeholder="5000"
+                    className="w-full px-4 py-3 pl-11 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    required
+                  />
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+            )}
 
             {/* Max Tickets Per Order */}
             <div>

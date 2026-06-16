@@ -297,9 +297,12 @@ export const updateEvent = async (req, res, next) => {
       importantInfo,
       lineup,
       seatingType,
+      seatRows,
+      seatColumns,
       startDate,
       endDate,
       maxCapacity,
+      maxTicketsPerOrder,
       venueId,
       categoryId
     } = req.body;
@@ -313,6 +316,7 @@ export const updateEvent = async (req, res, next) => {
     if (importantInfo !== undefined) updateData.importantInfo = importantInfo;
     if (lineup !== undefined) updateData.lineup = lineup;
     if (seatingType !== undefined) updateData.seatingType = seatingType;
+    if (maxTicketsPerOrder !== undefined) updateData.maxTicketsPerOrder = parseInt(maxTicketsPerOrder) || 10;
     if (venueId !== undefined) updateData.venueId = venueId;
     if (categoryId !== undefined) updateData.categoryId = categoryId;
 
@@ -320,11 +324,22 @@ export const updateEvent = async (req, res, next) => {
     if (startDate) updateData.startDate = new Date(startDate);
     if (endDate) updateData.endDate = new Date(endDate);
 
-    // Handle maxCapacity - recalculate availableSeats
-    if (maxCapacity !== undefined) {
+    // Handle seat rows/columns for assigned seating
+    const newSeatRows = seatRows !== undefined ? parseInt(seatRows) || 0 : existingEvent.seatRows;
+    const newSeatColumns = seatColumns !== undefined ? parseInt(seatColumns) || 0 : existingEvent.seatColumns;
+    const newSeatingType = seatingType || existingEvent.seatingType;
+
+    if (newSeatingType === 'assigned') {
+      updateData.seatRows = newSeatRows;
+      updateData.seatColumns = newSeatColumns;
+      const newSeatCount = newSeatRows * newSeatColumns;
+      updateData.maxCapacity = newSeatCount;
+      // Keep booked seats, update available
+      const bookedSeats = existingEvent.maxCapacity - existingEvent.availableSeats;
+      updateData.availableSeats = Math.max(0, newSeatCount - bookedSeats);
+    } else if (maxCapacity !== undefined) {
       const parsedMaxCapacity = parseInt(maxCapacity);
       updateData.maxCapacity = parsedMaxCapacity;
-      // Update available seats proportionally
       const bookedSeats = existingEvent.maxCapacity - existingEvent.availableSeats;
       updateData.availableSeats = parsedMaxCapacity - bookedSeats;
     }
@@ -356,6 +371,33 @@ export const updateEvent = async (req, res, next) => {
         }
       }
     });
+
+    // If seat rows/columns changed for assigned seating, regenerate seats
+    if (newSeatingType === 'assigned' && (seatRows !== undefined || seatColumns !== undefined)) {
+      const rowsChanged = newSeatRows !== existingEvent.seatRows;
+      const colsChanged = newSeatColumns !== existingEvent.seatColumns;
+
+      if (rowsChanged || colsChanged) {
+        // Delete old seats and recreate
+        await prisma.seat.deleteMany({ where: { eventId: id } });
+
+        const seatData = [];
+        const rowLabels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        for (let r = 0; r < newSeatRows; r++) {
+          const rowLabel = rowLabels[r] || `R${r + 1}`;
+          for (let c = 1; c <= newSeatColumns; c++) {
+            seatData.push({
+              eventId: id,
+              row: rowLabel,
+              number: c,
+              label: `${rowLabel}${c}`,
+              status: 'available'
+            });
+          }
+        }
+        await prisma.seat.createMany({ data: seatData });
+      }
+    }
 
     // Notify admins if organizer resubmitted for review
     if (req.user.role === 'ORGANIZER') {
