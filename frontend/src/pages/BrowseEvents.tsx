@@ -57,6 +57,8 @@ export default function BrowseEvents() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDate, setSelectedDate] = useState('all');
+  const [locationQuery, setLocationQuery] = useState('');
+  const [appliedLocationQuery, setAppliedLocationQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [events, setEvents] = useState<MappedEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -111,7 +113,45 @@ export default function BrowseEvents() {
       event.location.toLowerCase().includes(normalizedQuery) ||
       event.category.toLowerCase().includes(normalizedQuery);
 
-    return matchesCategory && matchesSearch;
+    // Date filtering
+    const now = new Date();
+    let matchesDate = true;
+    if (selectedDate !== 'all' && event.startDateRaw) {
+      const eventDate = new Date(event.startDateRaw);
+      switch (selectedDate) {
+        case 'today':
+          matchesDate =
+            eventDate.getDate() === now.getDate() &&
+            eventDate.getMonth() === now.getMonth() &&
+            eventDate.getFullYear() === now.getFullYear();
+          break;
+        case 'this week': {
+          const startOfWeek = new Date(now);
+          startOfWeek.setDate(now.getDate() - now.getDay());
+          startOfWeek.setHours(0, 0, 0, 0);
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 7);
+          matchesDate = eventDate >= startOfWeek && eventDate < endOfWeek;
+          break;
+        }
+        case 'this month':
+          matchesDate =
+            eventDate.getMonth() === now.getMonth() &&
+            eventDate.getFullYear() === now.getFullYear();
+          break;
+        case 'this year':
+          matchesDate = eventDate.getFullYear() === now.getFullYear();
+          break;
+      }
+    }
+
+    // Location filtering
+    const normalizedLocation = appliedLocationQuery.trim().toLowerCase();
+    const matchesLocation =
+      normalizedLocation.length === 0 ||
+      event.location.toLowerCase().includes(normalizedLocation);
+
+    return matchesCategory && matchesSearch && matchesDate && matchesLocation;
   }).sort((a, b) => {
     switch (sortBy) {
       case 'date-soonest':
@@ -211,9 +251,15 @@ export default function BrowseEvents() {
                   <input
                     type="text"
                     placeholder="City or ZIP code"
+                    value={locationQuery}
+                    onChange={(e) => setLocationQuery(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') setAppliedLocationQuery(locationQuery); }}
                     className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
-                  <button className="w-full mt-3 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors">
+                  <button
+                    onClick={() => setAppliedLocationQuery(locationQuery)}
+                    className="w-full mt-3 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  >
                     Apply Filters
                   </button>
                 </div>
