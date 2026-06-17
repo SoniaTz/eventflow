@@ -75,7 +75,6 @@ interface AnalyticsData {
 }
 
 export default function OrganizerDashboard() {
-  const [timeframe, setTimeframe] = useState('30d');
   const [myEvents, setMyEvents] = useState<Event[]>([]);
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);

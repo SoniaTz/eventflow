@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
-import { Search, SlidersHorizontal, Calendar, MapPin, ArrowRight, Loader2, X, Tag } from 'lucide-react';
+import { Search, SlidersHorizontal, Calendar, MapPin, ArrowRight, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ImgHTMLAttributes } from 'react';
 import { apiRequest, API_BASE_URL } from '../lib/api';

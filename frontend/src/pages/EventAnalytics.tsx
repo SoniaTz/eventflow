@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
-import { ArrowLeft, BarChart3, Users, Ticket, Calendar, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
+import { ArrowLeft, Users, Ticket, Calendar, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { apiRequest } from '../lib/api';
 
 interface EventAnalytics {
@@ -25,11 +25,8 @@ interface EventAnalytics {
   }[];
 }
 
-const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-
 export default function EventAnalytics() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [event, setEvent] = useState<EventAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState('30d');

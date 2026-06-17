@@ -115,12 +115,6 @@ export default function ProfilePage() {
     return String.fromCodePoint(...codePoints);
   };
 
-  const isValidPhone = (phone: string) => {
-    if (!phone) return true;
-    const digits = phone.replace(/\D/g, '');
-    return digits.length >= 10;
-  };
-
   const handleCountrySelect = (code: string) => {
     setSelectedCountry(code);
     setShowCountryDropdown(false);

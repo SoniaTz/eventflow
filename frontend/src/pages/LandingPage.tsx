@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import OrganizerRequiredModal from '../components/OrganizerRequiredModal';
-import { ArrowRight, Ticket, Users, BarChart3, Shield, Zap, Calendar, MapPin, Loader2, Mail, Phone } from 'lucide-react';
+import { ArrowRight, Ticket, Users, BarChart3, Shield, Zap, Calendar, MapPin, Loader2 } from 'lucide-react';
 import { apiRequest, API_BASE_URL } from '../lib/api';
 import { motion } from 'framer-motion';
 
@@ -43,8 +43,6 @@ export default function LandingPage() {
   const [showOrganizerModal, setShowOrganizerModal] = useState(false);
   const [trendingEvents, setTrendingEvents] = useState<TrendingEvent[]>([]);
   const [trendingLoading, setTrendingLoading] = useState(true);
-  const [superadminEmail, setSuperadminEmail] = useState<string>('superadmin@eventflow.com');
-  const [superadminPhone, setSuperadminPhone] = useState<string>('');
   const navigate = useNavigate();
 
   // Resolve image URL - handle local upload paths vs external URLs
@@ -95,21 +93,6 @@ export default function LandingPage() {
 
   useEffect(() => { fetchTrendingEvents(); }, [fetchTrendingEvents]);
 
-  useEffect(() => {
-    const fetchContactInfo = async () => {
-      try {
-        const res = await apiRequest<{ success?: boolean; data?: { email: string; phone?: string } }>('/public/contact');
-        if (res?.data) {
-          if (res.data.email) setSuperadminEmail(res.data.email);
-          if (res.data.phone) setSuperadminPhone(res.data.phone);
-        }
-      } catch {
-        // Keep default values
-      }
-    };
-    fetchContactInfo();
-  }, []);
-
   const handleCreateEventClick = () => {
     if (!user) {
       window.location.href = '/signup';
@@ -122,30 +105,6 @@ export default function LandingPage() {
     if (user.role === 'organizer') {
       navigate('/organizer/events/create');
     }
-  };
-
-  const handleMyTicketsClick = () => {
-    if (!user) {
-      window.location.href = '/signup';
-      return;
-    }
-    navigate('/dashboard');
-  };
-
-  const handleMyProfileClick = () => {
-    if (!user) {
-      window.location.href = '/signup';
-      return;
-    }
-    navigate('/profile');
-  };
-
-  const handleBecomeOrganizerClick = () => {
-    if (!user) {
-      window.location.href = '/signup';
-      return;
-    }
-    navigate('/become-organizer');
   };
 
   const features = [

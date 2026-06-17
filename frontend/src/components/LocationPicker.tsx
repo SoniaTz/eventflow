@@ -85,10 +85,6 @@ function splitDisplayName(fullName: string): { short: string; detail: string } {
 
 export default function LocationPicker({
   onLocationSelect,
-  initialAddress = '',
-  initialCity = '',
-  initialState = '',
-  initialZip = '',
 }: LocationPickerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -104,7 +100,6 @@ export default function LocationPicker({
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
-  const [isSelecting, setIsSelecting] = useState(false);
 
   const searchAbortRef = useRef<AbortController | null>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -312,7 +307,6 @@ export default function LocationPicker({
   };
 
   const selectSearchResult = (result: SearchResult) => {
-    setIsSelecting(true);
     setSearchQuery(result.displayName);
     setShowResults(false);
     setSelectedAddress(result.displayName);
@@ -340,7 +334,6 @@ export default function LocationPicker({
       if (mapInstanceRef.current) {
         mapInstanceRef.current.setView([result.lat, result.lng], 15);
       }
-      setIsSelecting(false);
     }, 200);
   };
 

@@ -56,7 +56,7 @@ export default function EditEvent() {
   const [importantInfoItems, setImportantInfoItems] = useState<string[]>(['']);
   const [lineupItems, setLineupItems] = useState<string[]>(['']);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [mapLocation, setMapLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [, setMapLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [seatingType, setSeatingType] = useState<'general' | 'assigned'>('general');
   const [seatRows, setSeatRows] = useState('');
   const [seatColumns, setSeatColumns] = useState('');

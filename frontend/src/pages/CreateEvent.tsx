@@ -41,7 +41,7 @@ const [importantInfoItems, setImportantInfoItems] = useState<string[]>(['']);
   ]);
 
   const [timeFormat, setTimeFormat] = useState<'12h' | '24h'>('12h');
-  const [mapLocation, setMapLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [, setMapLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [seatingType, setSeatingType] = useState<'general' | 'assigned'>('general');
   const [seatRows, setSeatRows] = useState('');
   const [seatColumns, setSeatColumns] = useState('');
@@ -132,7 +132,6 @@ const removeImportantInfoItem = (index: number) => {
   // State for API data
   const [categoriesData, setCategoriesData] = useState<{id: string, name: string}[]>([]);
   const [venuesData, setVenuesData] = useState<{id: string, name: string, address: string, city: string}[]>([]);
-  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,7 +156,6 @@ const removeImportantInfoItem = (index: number) => {
   // Fetch categories and venues on mount
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       try {
         const [categoriesRes, venuesRes] = await Promise.all([
           apiRequest<{success: boolean, data: {id: string, name: string}[]}>('/public/categories'),
@@ -172,8 +170,6 @@ const removeImportantInfoItem = (index: number) => {
       } catch (err) {
         console.error('Failed to fetch categories/venues:', err);
         toast.error('Failed to load form data. Please refresh the page.');
-      } finally {
-        setLoading(false);
       }
     };
     fetchData();

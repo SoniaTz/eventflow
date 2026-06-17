@@ -1,0 +1,10 @@
+- [x] Read all affected files
+- [ ] Fix LocationPicker.tsx unused variables
+- [ ] Fix BrowseEvents.tsx unused Tag import
+- [ ] Fix CreateEvent.tsx unused variables
+- [ ] Fix EditEvent.tsx unused mapLocation
+- [ ] Fix EventAnalytics.tsx unused imports and variables
+- [ ] Fix LandingPage.tsx unused variables
+- [ ] Fix OrganizerDashboard.tsx unused timeframe/setTimeframe
+- [ ] Fix ProfilePage.tsx unused isValidPhone
+- [ ] Verify build succeeds
