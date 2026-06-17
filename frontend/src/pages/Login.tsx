@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock, Mail, Eye, EyeOff, AlertCircle, Ticket } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -8,7 +8,6 @@ import { apiRequest } from '../lib/api';
 
 export default function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { login } = useAuth();
   
   const [formData, setFormData] = useState({
