@@ -329,7 +329,7 @@ export default function LandingPage() {
           <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-12 text-center text-white">
             <h2 className="text-4xl mb-4">Ready to create your event?</h2>
             <p className="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of organizers who trust EventFlow to power their events
+              Join thousands of organizers who trust SpotYourVibe to power their events
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               {!user ? (

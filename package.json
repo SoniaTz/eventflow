@@ -1,7 +1,7 @@
 {
-  "name": "eventflow",
+  "name": "spotyourvibe",
   "version": "1.0.0",
-  "description": "EventFlow - Event Management System with React Frontend and Express Backend",
+  "description": "SpotYourVibe - Event Management System with React Frontend and Express Backend",
   "private": true,
   "workspaces": [
     "frontend",

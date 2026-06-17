@@ -29,7 +29,7 @@ export default function Navigation() {
             <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Ticket className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl text-gray-900">EventFlow</span>
+            <span className="text-xl text-gray-900">SpotYourVibe</span>
           </Link>
 
           {/* Desktop Navigation */}

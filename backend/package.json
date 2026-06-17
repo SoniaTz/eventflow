@@ -1,7 +1,7 @@
 {
-  "name": "eventflow-backend",
+  "name": "spotyourvibe-backend",
   "version": "1.0.0",
-  "description": "EventFlow Backend API with SQLite and Prisma",
+  "description": "SpotYourVibe Backend API with PostgreSQL and Prisma",
   "main": "src/server.js",
   "type": "module",
   "scripts": {

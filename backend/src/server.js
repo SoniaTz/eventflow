@@ -57,7 +57,7 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/health', (req, res) => {
   res.json({
     success: true,
-    message: 'EventFlow API is running',
+    message: 'SpotYourVibe API is running',
     timestamp: new Date().toISOString()
   });
 });
@@ -87,9 +87,9 @@ app.use(errorHandler);
 // ============ START SERVER ============
 
 app.listen(PORT, () => {
-  console.log('╔════════════════════════════════════════╗');
-  console.log('║   EventFlow Backend API                ║');
-  console.log('╠════════════════════════════════════════╣');
+  console.log('╔═══════════════════════════════════════════╗');
+  console.log('║   SpotYourVibe Backend API                ║');
+  console.log('╠═══════════════════════════════════════════╣');
   console.log(`║   Server running on port ${PORT}        ║`);
   console.log(`║   Environment: ${process.env.NODE_ENV || 'development'}           ║`);
   console.log(`║   Health check: http://localhost:${PORT}/health ║`);
