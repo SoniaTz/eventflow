@@ -249,13 +249,23 @@ export const getAllUsers = async (req, res, next) => {
         }
       },
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'asc'
       }
+    });
+
+    // Only return the first (oldest) superadmin, hide duplicates
+    let seenSuperAdmin = false;
+    const filteredUsers = users.filter(u => {
+      if (u.role === 'SUPERADMIN') {
+        if (seenSuperAdmin) return false;
+        seenSuperAdmin = true;
+      }
+      return true;
     });
 
     res.json({
       success: true,
-      data: users
+      data: filteredUsers
     });
   } catch (error) {
     next(error);
