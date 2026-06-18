@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock, Mail, Eye, EyeOff, AlertCircle, Ticket } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { apiRequest } from '../lib/api';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,7 +16,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const superadminEmail = 'info@spotyourvibe.com';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
