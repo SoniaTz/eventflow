@@ -18,7 +18,6 @@ import ProfilePage from './pages/ProfilePage';
 import BecomeOrganizer from './pages/BecomeOrganizer';
 import TermsPage from './pages/TermsPage';
 import ForgotPassword from './pages/ForgotPassword';
-import Favorites from './pages/Favorites';
 
 export default function App() {
   return (
@@ -40,7 +39,6 @@ export default function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/favorites" element={<Favorites />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/become-organizer" element={<BecomeOrganizer />} />
           <Route path="/terms" element={<TermsPage />} />

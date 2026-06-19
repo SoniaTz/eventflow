@@ -7,7 +7,7 @@ import Footer from '../components/Footer';
 import SeatMap from '../components/SeatMap';
 import { apiRequest, API_BASE_URL } from '../lib/api';
 import { toast } from 'sonner';
-import { Calendar, MapPin, Clock, Share2, Heart, ArrowRight, X, Ticket, Info, LogIn, Loader2, Mail, Phone, Building2, Globe } from 'lucide-react';
+import { Calendar, MapPin, Clock, Share2, ArrowRight, X, Ticket, Info, LogIn, Loader2, Mail, Phone, Building2, Globe } from 'lucide-react';
 
 function ImageWithFallback(props: ImgHTMLAttributes<HTMLImageElement>) {
   const [didError, setDidError] = useState(false);
@@ -74,7 +74,6 @@ export default function EventDetail() {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
-  const [isFavorited, setIsFavorited] = useState(false);
   const [activeTab, setActiveTab] = useState('about');
   const [event, setEvent] = useState<ApiEvent | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,18 +81,6 @@ export default function EventDetail() {
   const [showContactModal, setShowContactModal] = useState(false);
 
   const hasAssignedSeating = event?.seatingType === 'assigned';
-
-
-  // Check if current event is favorited
-  useEffect(() => {
-    if (eventId) {
-      const stored = localStorage.getItem('favorites');
-      if (stored) {
-        const ids = JSON.parse(stored);
-        setIsFavorited(ids.includes(eventId));
-      }
-    }
-  }, [eventId]);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -167,24 +154,6 @@ export default function EventDetail() {
       </div>
     );
   }
-
-  const toggleFavorite = () => {
-    if (!eventId) return;
-    
-    const stored = localStorage.getItem('favorites');
-    let ids: string[] = stored ? JSON.parse(stored) : [];
-    
-    if (isFavorited) {
-      ids = ids.filter((id: string) => id !== eventId);
-      toast.success('Removed from favorites');
-    } else {
-      ids = [...ids, eventId];
-      toast.success('Added to favorites');
-    }
-    
-    localStorage.setItem('favorites', JSON.stringify(ids));
-    setIsFavorited(!isFavorited);
-  };
 
   const handleShare = async () => {
     const shareData = {
@@ -263,12 +232,6 @@ export default function EventDetail() {
                 <p className="text-lg text-white/90">{event.shortDescription || ''}</p>
               </div>
               <div className="flex gap-3">
-                <button
-                  onClick={toggleFavorite}
-                  className="p-3 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-lg transition-colors"
-                >
-                  <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current text-red-500' : ''}`} />
-                </button>
                 <button
                   onClick={handleShare}
                   className="p-3 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-lg transition-colors"
