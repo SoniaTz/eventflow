@@ -321,45 +321,6 @@ export default function Confirmation() {
             </button>
           </motion.div>
 
-          {/* Next Steps */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8"
-          >
-            <h3 className="text-lg mb-4 text-gray-900">What's Next?</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">
-                  1
-                </div>
-                <div className="flex-1">
-                  <div className="text-gray-900">Check your email</div>
-                  <div className="text-sm text-gray-600">We've sent your tickets and booking confirmation</div>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">
-                  2
-                </div>
-                <div className="flex-1">
-                  <div className="text-gray-900">Add to calendar</div>
-                  <div className="text-sm text-gray-600">Don't miss the event - add it to your calendar now</div>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">
-                  3
-                </div>
-                <div className="flex-1">
-                  <div className="text-gray-900">Arrive early</div>
-                  <div className="text-sm text-gray-600">Gates open 30 minutes before the event starts</div>
-                </div>
-              </li>
-            </ul>
-          </motion.div>
-
           {/* CTA */}
           <div className="text-center space-y-4">
             <Link
