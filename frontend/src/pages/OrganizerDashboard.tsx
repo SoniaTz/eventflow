@@ -86,7 +86,8 @@ export default function OrganizerDashboard() {
   const getImageUrl = (imagePath?: string) => {
     if (!imagePath) return undefined;
     if (imagePath.startsWith('http')) return imagePath;
-    const baseUrl = API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
+    // Only remove /api from the END of the URL, not from the domain name
+    const baseUrl = API_BASE_URL?.replace(/\/api$/, '') || 'http://localhost:5000';
     return `${baseUrl}${imagePath}`;
   };
 
