@@ -58,7 +58,9 @@ export default function Footer() {
             <h4 className="text-xs uppercase tracking-wider text-gray-400 font-semibold mb-3">Account</h4>
             <ul className="space-y-2">
               <li><Link to="/profile" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">My Profile</Link></li>
-              <li><Link to="/dashboard" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">My Tickets</Link></li>
+              {(user?.role === 'user' || user?.role === 'organizer') && (
+                <li><Link to="/dashboard" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">My Tickets</Link></li>
+              )}
               <li>
                 {!user ? (
                   <Link to="/signup" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors">Create Event</Link>
