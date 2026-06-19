@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import { ArrowLeft, Upload, Plus, X, Calendar, MapPin, Users, Clock, Info, AlertCircle, Loader2 } from 'lucide-react';
@@ -35,6 +35,7 @@ const [importantInfoItems, setImportantInfoItems] = useState<string[]>(['']);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const submittingRef = useRef(false);
 
   const [ticketTiers, setTicketTiers] = useState([
     { name: 'General Admission', quantity: '', description: '' }
@@ -175,7 +176,17 @@ const removeImportantInfoItem = (index: number) => {
     fetchData();
   }, []);
 
-const handleSubmit = async () => {
+  const handleSubmit = useCallback(async (e?: React.FormEvent) => {
+    // Prevent duplicate submissions using both state and ref
+    if (submitting || submittingRef.current) {
+      return;
+    }
+    
+    // Prevent default form submission if called from form onSubmit
+    if (e) {
+      e.preventDefault();
+    }
+
     // Validate required fields - use optional chaining for safety
     const { title, category, description, date, startTime, capacity, venue, address, city, state, zip } = formData;
     
@@ -228,6 +239,7 @@ const handleSubmit = async () => {
       return;
     }
 
+    submittingRef.current = true;
     setSubmitting(true);
     try {
       // Find or create venue
@@ -238,7 +250,7 @@ const handleSubmit = async () => {
       
       if (existingVenue) {
         venueId = existingVenue.id;
-} else {
+      } else {
         // Create new venue using organizer route
         const venueRes = await apiRequest<{success: boolean, data: {id: string}}>('/organizer/venues', {
           method: 'POST',
@@ -270,7 +282,7 @@ const handleSubmit = async () => {
         c.name.toLowerCase() === formData.category.toLowerCase()
       );
       
-if (!category) {
+      if (!category) {
         // Create category if not found using organizer route
         const catRes = await apiRequest<{success: boolean, data: {id: string}}>('/organizer/categories', {
           method: 'POST',
@@ -286,7 +298,7 @@ if (!category) {
       const startDate = new Date(`${formData.date}T${formData.startTime}:00`).toISOString();
       const endDate = startDate;
 
-// Create event data - filter out empty important info items
+      // Create event data - filter out empty important info items
       const filteredImportantInfo = importantInfoItems.filter(item => item.trim() !== '');
       const filteredLineup = lineupItems.filter(item => item.trim() !== '');
       
@@ -334,9 +346,13 @@ if (!category) {
       console.error('Failed to create event:', err);
       toast.error(err.message || 'Failed to create event. Please try again.');
     } finally {
+      // Reset both state and ref after a short delay to prevent rapid re-submissions
       setSubmitting(false);
+      setTimeout(() => {
+        submittingRef.current = false;
+      }, 1000);
     }
-  };
+  }, [formData, seatingType, seatRows, seatColumns, importantInfoItems, lineupItems, imageFile, imagePreview, venuesData, categoriesData, navigate]);
 
   const steps = [
     { number: 1, title: 'Basic Info', description: 'Event details' },
@@ -1072,6 +1088,7 @@ if (!category) {
             <div className="flex items-center justify-between pt-8 border-t border-gray-200 mt-8">
               {currentStep > 1 ? (
                 <button
+                  type="button"
                   onClick={() => setCurrentStep(currentStep - 1)}
                   className="px-6 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
@@ -1083,13 +1100,15 @@ if (!category) {
 
               {currentStep < 4 ? (
                 <button
+                  type="button"
                   onClick={() => setCurrentStep(currentStep + 1)}
                   className="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                   Continue
                 </button>
-) : (
+              ) : (
                 <button
+                  type="button"
                   onClick={handleSubmit}
                   disabled={submitting}
                   className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
