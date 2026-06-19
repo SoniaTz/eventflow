@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import SeatMap from '../components/SeatMap';
-import { apiRequest } from '../lib/api';
+import { apiRequest, API_BASE_URL } from '../lib/api';
 import { Calendar, MapPin, Clock, Share2, Heart, ArrowRight, X, Ticket, Info, LogIn, Loader2, Mail, Phone, Building2, Globe } from 'lucide-react';
 
 function ImageWithFallback(props: ImgHTMLAttributes<HTMLImageElement>) {
@@ -119,8 +119,12 @@ export default function EventDetail() {
   const getImageUrl = (imagePath?: string) => {
     if (!imagePath) return 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsaXZlJTIwbXVzaWMlMjBmZXN0aXZhbCUyMGNyb3dkfGVufDF8fHx8MTc4MTE5NjI4MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral';
     if (imagePath.startsWith('http')) return imagePath;
-    return `http://localhost:5000${imagePath}`;
+    const baseUrl = API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
+    return `${baseUrl}${imagePath}`;
   };
+
+  // Check if event is in the past
+  const isEventFinished = event?.startDate ? new Date(event.startDate) < new Date() : false;
 
   if (loading) {
     return (
@@ -192,6 +196,11 @@ export default function EventDetail() {
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full mb-3">
                   <span className="text-sm text-white">{event.category?.name || 'Event'}</span>
+                  {isEventFinished && (
+                    <span className="px-2 py-0.5 bg-gray-800 text-white text-xs rounded-full font-medium">
+                      Finished
+                    </span>
+                  )}
                 </div>
                 <h1 className="text-4xl lg:text-5xl mb-2 text-white">{event.title}</h1>
                 <p className="text-lg text-white/90">{event.shortDescription || ''}</p>
@@ -427,7 +436,11 @@ export default function EventDetail() {
                     </div>
                   )}
 
-                  {isAuthenticated ? (
+                  {isEventFinished ? (
+                    <div className="w-full px-6 py-4 bg-gray-400 text-white rounded-lg text-center font-medium">
+                      This event has finished
+                    </div>
+                  ) : isAuthenticated ? (
                     <>
                       <button
                         onClick={handleProceedToCheckout}
