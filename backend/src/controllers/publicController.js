@@ -23,10 +23,9 @@ export const getContactInfo = async (req, res, next) => {
       });
     }
 
-    // Always serve info@spotyourvibe.com as the superadmin contact
+    // Return the actual superadmin email from their profile
     const data = {
-      ...superadmin,
-      email: 'info@spotyourvibe.com'
+      ...superadmin
     };
 
     res.json({
