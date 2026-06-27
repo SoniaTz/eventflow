@@ -20,19 +20,41 @@ async function main() {
   });
   console.log('✅ Admin user created:', admin.email);
 
-  // Create SuperAdmin User
+  // Create / Fix SuperAdmin User
   const hashedSuperAdminPassword = await bcrypt.hash('superadmin123', 10);
-  await prisma.user.upsert({
-    where: { email: 'info@spotyourvibe.com' },
-    update: {},
-    create: {
-      name: 'Super Admin',
-      email: 'info@spotyourvibe.com',
-      password: hashedSuperAdminPassword,
-      role: 'SUPERADMIN',
-    },
+  
+  // First, check if there's an existing SUPERADMIN with a different email and reset it
+  const existingSuperAdmin = await prisma.user.findFirst({
+    where: { role: 'SUPERADMIN' },
   });
-  console.log('✅ SuperAdmin user created: info@spotyourvibe.com');
+  
+  if (existingSuperAdmin && existingSuperAdmin.email !== 'info@spotyourvibe.com') {
+    // Update the existing superadmin's email to the canonical one
+    await prisma.user.update({
+      where: { id: existingSuperAdmin.id },
+      data: {
+        email: 'info@spotyourvibe.com',
+        name: 'Super Admin',
+        password: hashedSuperAdminPassword,
+      },
+    });
+    console.log('✅ SuperAdmin email reset to: info@spotyourvibe.com');
+  } else {
+    await prisma.user.upsert({
+      where: { email: 'info@spotyourvibe.com' },
+      update: {
+        name: 'Super Admin',
+        password: hashedSuperAdminPassword,
+      },
+      create: {
+        name: 'Super Admin',
+        email: 'info@spotyourvibe.com',
+        password: hashedSuperAdminPassword,
+        role: 'SUPERADMIN',
+      },
+    });
+    console.log('✅ SuperAdmin user created/updated: info@spotyourvibe.com');
+  }
 
   // Create Verified Organizer
   const hashedOrganizerPassword = await bcrypt.hash('organizer123', 10);
